@@ -5,7 +5,7 @@
         v-for="email in unarchivedEmails"
         :key="email.id"
         :class="['clickable', email.read ? 'read' : '']"
-        @click="readEmail(email)"
+        @click="openEmail(email)"
       >
         <td>
           <input type="checkbox" />
@@ -21,19 +21,28 @@
       </tr>
     </tbody>
   </table>
+  <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
+    <MailView :email="openedEmail" />
+  </ModalView>
 </template>
 
 <script>
 import axios from "axios";
 import { format } from "date-fns";
-import { ref } from "vue";
+import MailView from "./MaiView.vue";
+import ModalView from "./ModalView.vue";
 
 export default {
+  components: {
+    MailView,
+    ModalView
+  },
   async setup() {
     const { data: emails } = await axios.get("http://localhost:3000/emails");
     return {
       format,
-      emails
+      emails,
+      openedEmail: null
     };
   },
   computed: {
@@ -47,9 +56,10 @@ export default {
     }
   },
   methods: {
-    readEmail(email) {
+    openEmail(email) {
       email.read = true;
       this.updateEmail(email);
+      this.openedEmail = email;
     },
     archiveEmail(email) {
       email.archived = true;
