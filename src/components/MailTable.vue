@@ -1,9 +1,13 @@
 <template>
-  <BulkActionBar :emails="unarchivedEmails"/>
+  <button @click="selectScreen('inbox')"
+        :disabled="selectedScreen == 'inbox'">Inbox</button>
+<button @click="selectScreen('archive')"
+        :disabled="selectedScreen == 'archive'">Archived</button>
+  <BulkActionBar :emails="filteredEmail"/>
   <table class="mail-table">
     <tbody>
       <tr
-        v-for="email in unarchivedEmails"
+        v-for="email in filteredEmail"
         :key="email.id"
         :class="['clickable', email.read ? 'read' : '']"
       >
@@ -34,6 +38,7 @@
 
 <script>
 import axios from "axios";
+import { ref } from "vue";
 import { format } from "date-fns";
 
 import MailView from "@/components/MailView.vue";
@@ -54,7 +59,8 @@ export default {
       format,
       emails,
       emailSelection: useEmailSelection(),
-      openedEmail: null
+      openedEmail: null,
+      selectedScreen: ref('inbox')
     };
   },
   computed: {
@@ -63,8 +69,12 @@ export default {
         return e1.sentAt < e2.sentAt ? 1 : -1;
       });
     },
-    unarchivedEmails() {
-      return this.sortedEmails.filter(e => !e.archived);
+    filteredEmail() {
+      if (this.selectedScreen == 'inbox') {
+        return this.sortedEmails.filter(e => !e.archived);
+      } else {
+        return this.sortedEmails.filter(e => e.archived);
+      }
     }
   },
   methods: {
@@ -79,6 +89,10 @@ export default {
       email.archived = true;
       this.updateEmail(email);
     },
+    selectScreen(screen) {
+      this.selectedScreen = screen;
+      this.emailSelection.clear();
+    },
     changeEmail({ toggleRead, toggleArchived, save, closeModal, changeIndex }) {
       let email = this.openedEmail;
       if (toggleRead) email.read = !email.read;
@@ -86,7 +100,7 @@ export default {
       if (save) this.updateEmail(email);
       if (closeModal) this.openedEmail = null;
       if (changeIndex) {
-        let emails = this.unarchivedEmails;
+        let emails = this.filteredEmail;
         let currentIndex = emails.indexOf(this.openedEmail);
         let newEmail = emails[currentIndex + changeIndex];
         this.openEmail(newEmail);
