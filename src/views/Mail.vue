@@ -1,7 +1,12 @@
 <template>
-  <div>
-    <router-view></router-view>
-  </div>
+  <h1>VMail Inbox</h1>
+  <h1>{{ emailSelection.emails.size }} email selecionado</h1>
+  <Suspense>
+    <MailTable />
+    <template #fallback>
+      Loading...
+    </template>
+  </Suspense>
 </template>
 
 <script>
@@ -11,7 +16,7 @@ export default {
   components: {
     MailTable
   },
-  name: 'App',
+  name: 'MailView',
   data() {
     return {
       emailSelection: useEmailSelection(),
