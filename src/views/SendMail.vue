@@ -1,9 +1,10 @@
 <template>
+  <Header />
   <div class="container my-5">
     <div class="row justify-content-center">
       <div class="col-lg-9">
         <div class="d-flex align-items-center mb-3">
-          <button @click="back" class="btn btn-outline-secondary">
+          <button @click="back" class="btn btn-outline-dark">
             Voltar
           </button>
           <h1 class="m-0">Enviar e-mail</h1>
@@ -42,8 +43,12 @@ import { ref } from 'vue';
 import { useFirestore } from 'vuefire';
 import { collection, addDoc } from "firebase/firestore";
 import { useRouter } from 'vue-router';
+import Header from '../components/Header.vue';
 
 export default {
+  components: {
+    Header
+  },
   name: 'SendMailView',
   setup() {
     const router = useRouter();

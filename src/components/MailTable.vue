@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-3 mb-3">
     <button @click="selectScreen('inbox')" :disabled="selectedScreen == 'inbox'">Principal</button>
     <button @click="selectScreen('archive')" :disabled="selectedScreen == 'archive'">Arquivados</button>
   </div>
@@ -31,8 +31,7 @@
 </template>
 
 <script>
-import axios from "axios";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { format } from "date-fns";
 
 import MailView from "./MailView.vue";
@@ -40,7 +39,8 @@ import BulkActionBar from "./BulkActionBar.vue";
 import useEmailSelection from "../composables/use-email-selection";
 import ModalView from './ModalView.vue';
 import { useCollection, useFirestore } from 'vuefire';
-import { collection } from 'firebase/firestore';
+import { collection, doc, updateDoc } from 'firebase/firestore';
+
 
 export default {
   components: {
@@ -49,18 +49,13 @@ export default {
     ModalView
   },
   async setup() {
-    // const { data } = await axios.get("http://localhost:3000/emails");
     const openedEmail = ref(null);
-    const emails = ref([]);
     const db = useFirestore();
-    const emailsCollections = useCollection(collection(db, 'emails'));
-
-    watch(emailsCollections, (newVal) => {
-      emails.value = newVal;
-    });
+    const emails = useCollection(collection(db, 'emails'));
 
     return {
       format,
+      db,
       emails,
       emailSelection: useEmailSelection(),
       openedEmail,
@@ -110,8 +105,9 @@ export default {
         this.openEmail(newEmail);
       }
     },
-    updateEmail(email) {
-      axios.put(`http://localhost:3000/emails/${email.id}`, email);
+    async updateEmail(email) {
+      const docRef = doc(this.db, 'emails', email.id)
+      await updateDoc(docRef, { ...email });
     }
   }
 };
