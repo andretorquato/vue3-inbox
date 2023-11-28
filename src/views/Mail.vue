@@ -1,4 +1,5 @@
 <template>
+  <Header />
   <div class="mail-view">
     <h1>VMail Inbox</h1>
     <h1>{{ emailSelection.emails.size }} email selecionado</h1>
@@ -12,12 +13,14 @@
 </template>
 
 <script>
+import Header from '../components/Header.vue';
 import MailTable from '../components/MailTable.vue';
 import useEmailSelection from '../composables/use-email-selection';
 
 export default {
   components: {
-    MailTable
+    MailTable,
+    Header
   },
   name: 'MailView',
   data() {
