@@ -1,24 +1,16 @@
 <template>
-  <button @click="selectScreen('inbox')"
-        :disabled="selectedScreen == 'inbox'">Inbox</button>
-<button @click="selectScreen('archive')"
-        :disabled="selectedScreen == 'archive'">Archived</button>
-  <BulkActionBar :emails="filteredEmail"/>
+  <div>
+    <button @click="selectScreen('inbox')" :disabled="selectedScreen == 'inbox'">Principal</button>
+    <button @click="selectScreen('archive')" :disabled="selectedScreen == 'archive'">Arquivados</button>
+  </div>
+  <BulkActionBar :emails="filteredEmail" />
   <table class="mail-table">
     <tbody>
-      <tr
-        v-for="email in filteredEmail"
-        :key="email.id"
-        :class="['clickable', email.read ? 'read' : '']"
-      >
+      <tr v-for="email in filteredEmail" :key="email.id" :class="['clickable', email.read ? 'read' : '']">
         <td>
-          <input
-            @click="emailSelection.toggle(email)"
-            :checked="emailSelection.emails.has(email)"
-            type="checkbox"
-          />
+          <input @click="emailSelection.toggle(email)" :checked="emailSelection.emails.has(email)" type="checkbox" />
         </td>
-        <td @click="openEmail(email)">d{{ email.from }}</td>
+        <td @click="openEmail(email)">{{ email.from }}</td>
         <td @click="openEmail(email)">
           <p>
             <strong>{{ email.subject }}</strong> - {{ email.body }}
@@ -27,24 +19,28 @@
         <td @click="openEmail(email)" class="date">
           {{ format(new Date(email.sentAt), "MMM do yyyy") }}
         </td>
-        <td><button @click="archiveEmail(email)">Archive</button></td>
+        <td><button @click="archiveEmail(email)">Arquivar</button></td>
       </tr>
     </tbody>
   </table>
   <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
-    <MailView :email="openedEmail" @changeEmail="changeEmail" />
+
+    <MailView v-if="openedEmail" :email="openedEmail" @changeEmail="changeEmail" />
   </ModalView>
+  <MailView v-if="openedEmail" :email="openedEmail" @changeEmail="changeEmail" />
 </template>
 
 <script>
 import axios from "axios";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { format } from "date-fns";
 
-import MailView from "@/components/MailView.vue";
-import ModalView from "@/components/ModalView.vue";
-import BulkActionBar from "@/components/BulkActionBar.vue";
-import useEmailSelection from "@/composables/use-email-selection";
+import MailView from "./MailView.vue";
+import BulkActionBar from "./BulkActionBar.vue";
+import useEmailSelection from "../composables/use-email-selection";
+import ModalView from './ModalView.vue';
+import { useCollection, useFirestore } from 'vuefire';
+import { collection } from 'firebase/firestore';
 
 export default {
   components: {
@@ -53,13 +49,21 @@ export default {
     ModalView
   },
   async setup() {
-    const { data: emails } = await axios.get("http://localhost:3000/emails");
+    // const { data } = await axios.get("http://localhost:3000/emails");
+    const openedEmail = ref(null);
+    const emails = ref([]);
+    const db = useFirestore();
+    const emailsCollections = useCollection(collection(db, 'emails'));
+
+    watch(emailsCollections, (newVal) => {
+      emails.value = newVal;
+    });
 
     return {
       format,
       emails,
       emailSelection: useEmailSelection(),
-      openedEmail: null,
+      openedEmail,
       selectedScreen: ref('inbox')
     };
   },
