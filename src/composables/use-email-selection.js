@@ -1,10 +1,13 @@
 import { reactive } from "vue";
-import axios from "axios";
+import { useFirestore } from "vuefire";
+import { doc, updateDoc } from "firebase/firestore";
 
 const emails = reactive(new Set());
 
 function useEmailSelection() {
-  const toggle = email => {
+  const db = useFirestore();
+
+  const toggle = (email) => {
     if (emails.has(email)) {
       emails.delete(email);
     } else {
@@ -16,22 +19,28 @@ function useEmailSelection() {
     emails.clear();
   };
 
-  const addMultiple = newEmails => {
-    newEmails.forEach(email => {
+  const addMultiple = (newEmails) => {
+    newEmails.forEach((email) => {
       emails.add(email);
     });
   };
 
-  const forSelected = fn => {
-    emails.forEach(email => {
+  const forSelected = (fn) => {
+    emails.forEach(async (email) => {
       fn(email);
-      axios.put(`http://localhost:3000/emails/${email.id}`, email);
-    })
-  }
+      const docRef = doc(db, "emails", email.id);
+      await updateDoc(docRef, {
+        ...email,
+      });
+    });
+  };
 
-  const markRead = () => forSelected(email => email.read = true);
-  const markUnread = () => forSelected(email => email.read = false);
-  const archive = () => { forSelected(email => email.read = false); clear(); };
+  const markRead = () => forSelected((email) => (email.read = true));
+  const markUnread = () => forSelected((email) => (email.read = false));
+  const archive = () => {
+    forSelected((email) => (email.read = false));
+    clear();
+  };
 
   return {
     emails,
@@ -40,7 +49,7 @@ function useEmailSelection() {
     addMultiple,
     markRead,
     markUnread,
-    archive
+    archive,
   };
 }
 

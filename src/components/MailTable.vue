@@ -3,35 +3,51 @@
     <button @click="selectScreen('inbox')" :disabled="selectedScreen == 'inbox'">Principal</button>
     <button @click="selectScreen('archive')" :disabled="selectedScreen == 'archive'">Arquivados</button>
   </div>
-  <BulkActionBar :emails="filteredEmail" />
-  <table class="mail-table">
-    <tbody>
-      <tr v-for="email in filteredEmail" :key="email.id" :class="['clickable', email.read ? 'read' : '']">
-        <td>
-          <input @click="emailSelection.toggle(email)" :checked="emailSelection.emails.has(email)" type="checkbox" />
-        </td>
-        <td @click="openEmail(email)">{{ email.from }}</td>
-        <td @click="openEmail(email)">
-          <p>
-            <strong>{{ email.subject }}</strong> - {{ email.body }}
-          </p>
-        </td>
-        <td @click="openEmail(email)" class="date">
-          {{ format(new Date(email.sentAt), "MMM do yyyy") }}
-        </td>
-        <td><button @click="archiveEmail(email)">Arquivar</button></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <marker-modal></marker-modal>
+        <div v-for="tag of tags" :key="tag.id"
+          class="checkbox d-flex align-items-center gap-2 justify-content-start mb-2">
+          <input v-model="selectedTags" :id="tag.id" class="styled" type="checkbox" :value="tag.id">
+          <label :for="tag.id">
+            {{ tag.name }}
+          </label>
+        </div>
+      </div>
+      <div class="col">
+        <BulkActionBar :emails="filteredEmail" />
+        <table class="mail-table">
+          <tbody>
+            <tr v-for="email in filteredEmail" :key="email.id" :class="['clickable', email.read ? 'read' : '']">
+              <td>
+                <input @click="emailSelection.toggle(email)" :checked="emailSelection.emails.has(email)"
+                  type="checkbox" />
+              </td>
+              <td @click="openEmail(email)">{{ email.from }}</td>
+              <td @click="openEmail(email)">
+                <p>
+                  <strong>{{ email.subject }}</strong> - {{ email.body }}
+                </p>
+              </td>
+              <td @click="openEmail(email)" class="date">
+                {{ format(new Date(email.sentAt), "MMM do yyyy") }}
+              </td>
+              <td><button @click="archiveEmail(email)">Arquivar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
-
     <MailView v-if="openedEmail" :email="openedEmail" @changeEmail="changeEmail" />
   </ModalView>
   <MailView v-if="openedEmail" :email="openedEmail" @changeEmail="changeEmail" />
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { format } from "date-fns";
 
 import MailView from "./MailView.vue";
@@ -40,23 +56,35 @@ import useEmailSelection from "../composables/use-email-selection";
 import ModalView from './ModalView.vue';
 import { useCollection, useFirestore } from 'vuefire';
 import { collection, doc, updateDoc } from 'firebase/firestore';
+import MarkerModal from './MarkerModal.vue';
 
 
 export default {
   components: {
     BulkActionBar,
     MailView,
-    ModalView
+    ModalView,
+    MarkerModal
   },
   async setup() {
     const openedEmail = ref(null);
     const db = useFirestore();
-    const emails = useCollection(collection(db, 'emails'));
+    const emailsCollection = useCollection(collection(db, 'emails'));
+    const tags = useCollection(collection(db, 'tags'));
+    const selectedTags = ref([]);
+
+    const emails = ref([]);
+
+    watch(emailsCollection, (newEmails) => {
+      emails.value = [...newEmails];
+    });
 
     return {
       format,
       db,
       emails,
+      tags,
+      selectedTags,
       emailSelection: useEmailSelection(),
       openedEmail,
       selectedScreen: ref('inbox')
@@ -64,6 +92,7 @@ export default {
   },
   computed: {
     sortedEmails() {
+      console.log('emails:', this.emails);
       return this.emails.sort((e1, e2) => {
         return e1.sentAt < e2.sentAt ? 1 : -1;
       });
