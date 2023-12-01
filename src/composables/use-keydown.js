@@ -7,11 +7,21 @@ const useKeydown = keyCombo => {
       kc.fn();
     }
   };
-  window.addEventListener("keydown", onKeydown);
 
-  onBeforeUnmount(() => {
+  const start = () => {
+    window.addEventListener("keydown", onKeydown);
+  }
+
+  const stop = () => {
     window.removeEventListener("keydown", onKeydown);
+  }
+
+  start();
+  onBeforeUnmount(() => {
+    stop();
   });
+
+  return { start, stop };
 };
 
 export default useKeydown;
