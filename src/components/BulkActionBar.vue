@@ -12,10 +12,17 @@
         Marcar como lido
       </button>
       <button @click="emailSelection.markUnread()" :disabled="[...emailSelection.emails].every(e => !e.read)">
-        Marcar como não lido
+        Marcar como não visto
       </button>
       <button @click="emailSelection.archive()" :disabled="numberSelected == 0">
         Arquivar
+      </button>
+      <button @click="emailSelection.remove()" :disabled="numberSelected == 0">
+        Excluir
+      </button>
+      <button :disabled="numberSelected == 0" type="button" data-bs-toggle="modal" data-bs-target="#MarkerSelectModal"
+        data-bs-whatever="@mdo">
+        Vincular Marcador
       </button>
     </span>
   </div>
@@ -65,5 +72,3 @@ export default {
   }
 }
 </script>
-
-<style scoped></style>
