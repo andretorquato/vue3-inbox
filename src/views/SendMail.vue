@@ -59,9 +59,21 @@ export default {
       body: '',
     });
 
+    const getEmail = () => {
+      const user = sessionStorage.getItem('user')
+      if (user) {
+        const email = JSON.parse(user)?.email
+        if (email) {
+          return email
+        }
+      }
+      return ''
+    }
+
     const sendEmail = async () => {
       const data = {
-        from: form.value.email,
+        from: getEmail(),
+        to: form.value.email,
         subject: form.value.subject,
         body: form.value.body,
         read: false,
