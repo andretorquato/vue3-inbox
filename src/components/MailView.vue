@@ -1,21 +1,22 @@
 <template>
-  <div class="email-display">
+  <div class="email-display mt-4">
     <div>
-      <button @click="closeModal">Voltar (esc)</button>
+      <button @click="closeModal">🔙 Voltar (esc)</button>
       <button @click="toggleArchive">
-        {{ visibleEmail?.archived ? "Mover para principal (e)" : "Arquivar (e)" }}
+        {{ visibleEmail?.archived ? "📧 Mover para principal (e)" : "📩 Arquivar (e)" }}
       </button>
-      <button @click="toggleRead">{{ visibleEmail?.read ? "Marcar como não lido (r)" : "Marcar como lido (r)" }}</button>
-      <button @click="goNewer">Próximo E-mail (k)</button>
-      <button @click="goOlder">Prévio E-mail (j)</button>
+      <button @click="toggleRead">{{ visibleEmail?.read ? "📤 Marcar como não lido (r)" : "📥 Marcar como lido (r)" }}</button>
+      <button @click="goNewer">⏩ Próximo E-mail (k)</button>
+      <button @click="goOlder">⏪ Prévio E-mail (j)</button>
     </div>
-    <h2 class="mb-0">
+    <h2 class="mb-0 mt-4">
       Assunto: <strong>{{ visibleEmail.subject }}</strong>
     </h2>
     <div>
       <em>De {{ visibleEmail.from }} em {{ format(new Date(visibleEmail.sentAt), "MMM do yyyy") }}</em>
     </div>
-    <div v-html="marked(visibleEmail.body)" />
+    <hr class="sketch-rule grid__item">
+    <div class="mt-4" v-html="marked(visibleEmail.body)" />
     <div v-if="visibleEmail?.answers">
       <div v-for="answer in visibleEmail?.answers" :key="answer.sentAt">
         <hr class="sketch-rule grid__item">
@@ -61,11 +62,11 @@ export default {
     const db = useFirestore();
     const showEditor = ref(false)
     let toggleRead = () => { emit("changeEmail", { toggleRead: true, save: true }) }
-    let toggleArchive = () => { emit("changeEmail", { toggleArchive: true, save: true, closeModal: true }) }
+    let toggleArchive = () => { emit("changeEmail", { toggleArchived: true, save: true, closeModal: true }) }
     let goNewer = () => { emit("changeEmail", { changeIndex: -1 }) }
     let goOlder = () => { emit("changeEmail", { changeIndex: 1 }) }
-    let goNewerAndArchive = () => { emit("changeEmail", { changeIndex: -1, toggleArchive: true, save: true }) }
-    let goOlderAndArchive = () => { emit("changeEmail", { changeIndex: 1, toggleArchive: true, save: true }) }
+    let goNewerAndArchive = () => { emit("changeEmail", { changeIndex: -1, toggleArchived: true, save: true }) }
+    let goOlderAndArchive = () => { emit("changeEmail", { changeIndex: 1, toggleArchived: true, save: true }) }
     let closeModal = () => { emit("changeEmail", { closeModal: true }) }
     const keydown = useKeydown([
       { key: "r", fn: toggleRead },

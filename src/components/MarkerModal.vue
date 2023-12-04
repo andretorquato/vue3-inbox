@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex align-items-center justify-content-end gap-3">
-    <b>Marcadores</b>
+    <b>🔖 Marcadores</b>
     <button @click="redirectRegister" class="btn btn-outline-dark" type="button" data-bs-toggle="modal"
       data-bs-target="#MarkerModal" data-bs-whatever="@mdo">+</button>
   </div>

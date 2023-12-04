@@ -6,23 +6,23 @@
     </span>
     <span class="buttons">
       <button @click="sendEmail">
-        Enviar E-mail
+        📨Enviar E-mail
       </button>
       <button @click="emailSelection.markRead()" :disabled="[...emailSelection.emails].every(e => e.read)">
-        Marcar como lido
+        📤 Marcar como lido
       </button>
       <button @click="emailSelection.markUnread()" :disabled="[...emailSelection.emails].every(e => !e.read)">
-        Marcar como não visto
+        📥 Marcar como não visto
       </button>
       <button @click="emailSelection.archive()" :disabled="numberSelected == 0">
-        Arquivar
+        📩 Arquivar
       </button>
       <button @click="emailSelection.remove()" :disabled="numberSelected == 0">
-        Excluir
+        ✂️ Excluir
       </button>
       <button :disabled="numberSelected == 0" type="button" data-bs-toggle="modal" data-bs-target="#MarkerSelectModal"
         data-bs-whatever="@mdo">
-        Vincular Marcador
+        🔃 Vincular Marcador
       </button>
     </span>
   </div>

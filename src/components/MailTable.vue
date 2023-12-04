@@ -1,9 +1,9 @@
 <template>
   <div v-if="!openedEmail" class="container">
-    <h1 v-if="!openedEmail" class="text-center">{{ emailSelection.emails.size }} email selecionado</h1>
+    <h3 v-if="!openedEmail" class="text-center">{{ emailSelection.emails.size }} email selecionado</h3>
     <div class="mt-3 mb-3 d-flex justify-content-center">
-      <button @click="selectScreen('inbox')" :disabled="selectedScreen == 'inbox'">Principal</button>
-      <button @click="selectScreen('archive')" :disabled="selectedScreen == 'archive'">Arquivados</button>
+      <button @click="selectScreen('inbox')" :disabled="selectedScreen == 'inbox'">📧 Principal</button>
+      <button @click="selectScreen('archive')" :disabled="selectedScreen == 'archive'">📩 Arquivados</button>
     </div>
     <div class="row">
       <div class="col-2">
@@ -21,7 +21,8 @@
         <marker-select-modal v-if="emailSelection.emails.size > 0"></marker-select-modal>
         <table class="mail-table w-100">
           <tbody>
-          <tr v-for="email in filteredEmail" :key="email.id" :class="['clickable', email.read ? 'read' : '', email?.deleted ? 'deleted' : '']">
+            <tr v-for="email in filteredEmail" :key="email.id"
+              :class="['clickable', email.read ? 'read' : '', email?.deleted ? 'deleted' : '']">
               <td>
                 <input @click="emailSelection.toggle(email)" :checked="emailSelection.emails.has(email)"
                   type="checkbox" />
@@ -38,11 +39,12 @@
               <td @click="openEmail(email)" class="date">
                 {{ format(new Date(email.sentAt), "MMM do yyyy") }}
               </td>
-              <td><button @click="archiveEmail(email)">Arquivar</button></td>
+              <td><button @click="archiveEmail(email)">📩</button></td>
             </tr>
           </tbody>
         </table>
-        <p v-if="filteredEmail.length == 0" class="text-center mt-4">Caixa de e-mail vazia...</p>
+        <h3 v-if="filteredEmail.length == 0" class="text-center mt-4">4️⃣0️⃣4️⃣</h3>
+        <h6 v-if="filteredEmail.length == 0" class="text-center mt-4"> 📪 <b>Não encontramos nada por aqui...</b></h6>
       </div>
     </div>
   </div>
@@ -120,24 +122,27 @@ export default {
         return this.sortedEmails.filter(e => !e.archived && e.to == this.userEmail)
           .filter(e => {
             if (this.selectedTags.length == 0) return true;
-            return e.tags.some(t => this.selectedTags.includes(t));
+            return e?.tags?.some(t => this.selectedTags.includes(t));
           });
       } else {
         return this.sortedEmails.filter(e => e.archived && e.to == this.userEmail)
           .filter(e => {
             if (this.selectedTags.length == 0) return true;
-            return e.tags.some(t => this.selectedTags.includes(t));
+            return e?.tags?.some(t => this.selectedTags.includes(t));
           });;
       }
     }
   },
   methods: {
     openEmail(email) {
-      this.openedEmail = email;
+      this.openedEmail = null;
+      setTimeout(() => {
+        this.openedEmail = email;
       if (email) {
         email.read = true;
         this.updateEmail(email);
       }
+      }, 100)
     },
     archiveEmail(email) {
       email.archived = true;

@@ -1,7 +1,7 @@
 <template>
   <Header />
   <div class="mail-view">
-    <h1>VMail Inbox</h1>
+    <h1>VMail Inbox 📧</h1>
     <Suspense>
       <MailTable />
       <template #fallback>
