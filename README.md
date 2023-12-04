@@ -7,6 +7,7 @@ Para executar este projeto siga os passos descritos no arquivo [passo-a-passo](p
 ## Membros da equipe
 
 André Torquato, 501740, Sistemas de Informação
+Elixandre da Silveira Silva Filho, 478164, Sistemas de Informação
 
 ## Papéis ou tipos de usuário da aplicação
 
