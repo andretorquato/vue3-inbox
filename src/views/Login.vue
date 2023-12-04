@@ -18,6 +18,7 @@
                   <label for="password" class="form-label">Senha</label>
                   <input v-model="user.password" type="password" class="form-control" id="password" />
                 </div>
+                <p v-if="loginError" class="text-danger">Erro ao fazer login</p>
                 <div class="d-grid">
                   <button type="submit" class="btn btn-outline-dark">Login</button>
                   <button @click="redirectRegister" class="btn btn-text-dark">Cadastrar-se</button>
@@ -46,8 +47,10 @@ export default {
       password: '',
     });
     const auth = useFirebaseAuth();
+    const loginError = ref(false);
 
     const signInIntoFirebase = async () => {
+      loginError.value = false;
       signInWithEmailAndPassword(auth, user.value.email, user.value.password)
         .then((userCredential) => {
           // Signed in
@@ -63,6 +66,7 @@ export default {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
+          loginError.value = true;
         });
     }
 
@@ -72,6 +76,7 @@ export default {
 
     return {
       user,
+      loginError,
       signInIntoFirebase,
       redirectRegister
     };
