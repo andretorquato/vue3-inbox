@@ -16,6 +16,7 @@ André Torquato, 501740, Sistemas de Informação
 
 - Usuário
 - E-mails
+- Tags
 
 ## Principais funcionalidades da aplicação
 
@@ -23,14 +24,22 @@ André Torquato, 501740, Sistemas de Informação
 - O usuário pode autenticar-se no sistema
 - O usuário pode enviar um e-mail 
 - O usuário pode responder um e-mail
+- O usuário pode excluir e-mails
 - O usuário pode visualizar seus e-mails não lidos
 - O usuário pode arquivar e-mails
+- O usuário pode criar marcadores
+- O usuário pode vincular marcadores a e-mails
+- O usuário pode filtrar e-mails por seus respectivos marcadores
+
 
 ## Tecnologias e frameworks utilizados
 
 **Frontend:**
 
-- VueJS v3.0, Vue-Router e Pinia.
+- VueJS v3.0, 
+- Vue-Router 
+- Pinia.
+- Vue Firebase
 - Axios
 
 **Backend:**
@@ -45,14 +54,4 @@ André Torquato, 501740, Sistemas de Informação
 | --- | --- | --- | --- | --- |
 | Usuário |  | x |  |  |
 | Email | X  | X |  X | X |
-
-> Lembre-se que é necessário implementar o CRUD de pelo menos duas entidades.
-
-## Rotas da API REST utilizadas
-
-| Método HTTP | URL |
-| --- | --- |
-| GET | - |
-| POST | - |
-| PUT | - |
-| DELETE | - |
+| Tag | X  | X |  X |  |
