@@ -20,10 +20,10 @@
     <div v-if="visibleEmail?.answers">
       <div v-for="answer in visibleEmail?.answers" :key="answer.sentAt">
         <hr class="sketch-rule grid__item">
+        <div v-html="marked(answer.content)" />
         <div>
           <em>De {{ answer.from }} em {{ format(new Date(answer.sentAt), "MMM do yyyy") }}</em>
         </div>
-        <div v-html="marked(answer.content)" />
       </div>
     </div>
     <hr class="sketch-rule grid__item">

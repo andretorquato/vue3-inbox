@@ -10,7 +10,7 @@
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <div v-for="tag of tags" :key="tag.id"
+              <div v-for="tag of filteredTags" :key="tag.id"
                 class="checkbox d-flex align-items-center gap-2 justify-content-start mb-2">
                 <input v-model="selectedTags" :id="tag.id" class="styled" type="checkbox" :value="tag.name">
                 <label :for="tag.id">
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useFirestore } from 'vuefire';
 import useTags from '../composables/use-tags';
 import useEmailSelection from '../composables/use-email-selection';
@@ -41,7 +41,7 @@ export default {
     const db = useFirestore();
     const { tags } = useTags();
     const selectedTags = ref([]);
-    const emailSelection  = useEmailSelection();
+    const emailSelection = useEmailSelection();
 
 
     const setTags = async () => {
@@ -49,12 +49,31 @@ export default {
       selectedTags.value = [];
     }
 
+    const userEmail = computed(() => {
+      const user = sessionStorage.getItem('user')
+      if (user) {
+        const email = JSON.parse(user)?.email
+        if (email) {
+          return email
+        }
+      }
+      return ''
+    })
+
+    const filteredTags = computed(() => {
+      if(!tags.value) return;
+      return tags?.value?.filter(t => {
+        return t.email == userEmail.value;
+      });
+    })
+
     onMounted(() => {
       selectedTags.value = emailSelection.selectedTags();
     });
 
     return {
       tags,
+      filteredTags,
       selectedTags,
       markerName,
       setTags,
