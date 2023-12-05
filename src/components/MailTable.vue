@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col-2">
         <marker-modal></marker-modal>
-        <div v-for="tag of tags" :key="tag.id"
+        <div v-for="tag of filteredTags" :key="tag.id"
           class="checkbox d-flex align-items-center gap-2 justify-content-start mb-2">
           <input v-model="selectedTags" :id="tag.id" class="styled" type="checkbox" :value="tag.name">
           <label :for="tag.id">
@@ -131,6 +131,11 @@ export default {
             return e?.tags?.some(t => this.selectedTags.includes(t));
           });;
       }
+    },
+    filteredTags() {
+      return this.tags.filter(t => {
+        return t.email == this.userEmail;
+      });
     }
   },
   methods: {
